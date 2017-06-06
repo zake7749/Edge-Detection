@@ -1,4 +1,4 @@
-function [ sobeled ] = Sobel(img)
+function [ sobeled ] = Sobel(img, threshold)
 
 % 讀入一張灰階圖片(channel 為 1), 對其進行 Sobel 運算
     
@@ -32,12 +32,14 @@ function [ sobeled ] = Sobel(img)
             for kx=-1:1
                 for ky=-1:1
                     gx = gx + padded(i+kx,j+ky) * x_kernel(kx+2,ky+2);
-                    gy = gy + padded(i+kx,j+ky) * y_kernel(ky+2,ky+2);
+                    gy = gy + padded(i+kx,j+ky) * y_kernel(kx+2,ky+2);
                 end
             end
             
-            g = sqrt(gx^2 + gy^2); % L2 distance.
-            sobeled(i-1,j-1) = g;            
+            g = sqrt(gx^2 + gy^2);
+            if g > threshold 
+                sobeled(i-1,j-1) = g; % 清理低強度的雜訊,超越閥值才視為邊
+            end
         end
     end
     
